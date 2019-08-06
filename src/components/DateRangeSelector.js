@@ -1,107 +1,95 @@
-import React from 'react';
-import Moment from 'moment';
+import React, { useState } from "react";
+import { DateRangePicker } from "react-date-range";
+import { defaultStaticRanges } from "./defaultRanges";
+import { format } from "date-fns";
 
-import { Calendar } from 'react-date-range';
-import { FormControl } from "react-bootstrap";
+import "react-date-range/dist/styles.css"; // main style file
+import "react-date-range/dist/theme/default.css"; // theme css file
 
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
+import "./Datepicker.css";
 
-import './DateRangeSelector.css';
+import PropTypes from "prop-types";
 
+const DateRangeSelector = ({ ranges, onChange, onSubmit, ...rest }) => {
+     const [selectedDateRange, setSelectedDateRange] = useState({
+          startDate: new Date(),
+          endDate: new Date(),
+          key: "selection"
+     });
+     const [show, setShow] = useState(false);
 
-export class DateRangeSelector extends React.Component {
+     function formatDateDisplay(date, defaultText) {
+          if (!date) return defaultText;
+          return format(date, "MM/DD/YYYY");
+     }
 
-    constructor(props){
-        super(props);
+     const handleSelect = ranges => {
+          setSelectedDateRange(ranges.selection);
+          console.log(ranges.selection);
+     };
 
-        this.handleChange.bind(this);
-    }
-    
-    handleChange = date => {
-        this.props.onChange(date);
-    }
-    
-    render(){
-        
-		return (
-			<Calendar
-				date={this.props.date}
-				onChange={this.handleChange}
-			/>
-		)
-	}
-}
+     const onClickDone = () => {
+          onSubmit(selectedDateRange);
+          setShow(true);
+     };
 
-export class DatePickerInput extends React.Component {
+     const onClickClear = () => {
+          setSelectedDateRange({
+               startDate: new Date(),
+               endDate: new Date(),
+               key: "selection"
+          });
+          setShow(false);
+     };
 
-    constructor(props){
-        super(props);
-
-        let date = this.props.date? new Date(this.props.date) : new Date();
-
-        this.state = {
-            date    : date,
-            calendar: false
-        }
-
-        this.handleSelect.bind(this);
-        this.handleClick.bind(this);
-        this.handleChange.bind(this);
-    }
-
-    handleChange = event => {
-        let date = new Date(event.target.value);
-
-        if (!event.target.value || !date.valueOf()){
-            return;
-        }
-
-        this.props.onChange(date);
-        this.setState({date:date});
-    }
-    
-	handleSelect = date => {
-        
-        this.props.onChange(date);
-        this.setState({
-            calendar: false,
-            date    : date
-        });
-    }
-    
-    handleClick = event => {
-        this.setState({calendar: (!this.state.calendar)});
-    }
-
-    toggleCalendar() {
-        let className = 'date-picker-calendar';
-
-        if (!this.state.calendar){
-            className += ' no-display';
-        }
-
-        return className;
-    }
-
-	render(){
-		return (
-            <div>
-                <FormControl
-                    type="text"
-                    className="date-picker-input"
-                    value={ Moment(this.state.date).format('L') }
-                    onChange={ this.handleChange }
-                    onClick={ this.handleClick }
-                />
-
-                <div className={this.toggleCalendar()}>
-                    <DateRangeSelector
-                        date={this.state.date}
-                        onChange={this.handleSelect}
+     return (
+          <React.Fragment>
+               <div className="shadow">
+                    <DateRangePicker
+                         onChange={handleSelect}
+                         showSelectionPreview={true}
+                         moveRangeOnFirstSelection={false}
+                         months={2}
+                         ranges={[selectedDateRange]}
+                         direction="horizontal"
                     />
-                </div>
-            </div>
-		)
-	}
-}
+                    <div className="text-right position-relative rdr-buttons-position mt-2 mr-3">
+                         <button
+                              className="btn btn-transparent text-primary rounded-0 px-4 mr-2"
+                              onClick={() => setShow(true)}
+                         >
+                              Done
+                         </button>
+                         <button
+                              className="btn btn-transparent text-danger rounded-0 px-4"
+                              onClick={onClickClear}
+                         >
+                              Clear
+                         </button>
+                    </div>
+               </div>
+
+               {show&&<div className="h-100 mt-3 alert alert-transparent">
+                    <p className="my-auto d-inline">Start Date :{" "}
+                    {formatDateDisplay(selectedDateRange.startDate)}{" | "}
+                    End Date :{" "}
+                    {formatDateDisplay(selectedDateRange.endDate)}
+                    </p>
+                    <button className="mb-1 btn btn-transparent text-danger" onClick={() => setShow(false)} variant="outline-success"> Close</button>
+               </div>}
+          </React.Fragment>
+     );
+};
+
+DateRangeSelector.defaultProps = {
+     ranges: defaultStaticRanges
+};
+
+DateRangeSelector.propTypes = {
+     /**
+      * On Submit
+      */
+     onSubmit: PropTypes.func.isRequired
+};
+
+export default DateRangeSelector;
