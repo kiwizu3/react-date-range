@@ -28,10 +28,10 @@ const DateRangeSelector = ({ ranges, onChange, onSubmit, ...rest }) => {
           console.log(ranges.selection);
      };
 
-     const onClickDone = () => {
-          onSubmit(selectedDateRange);
-          setShow(true);
-     };
+     // const onClickDone = () => {
+     //      onSubmit(selectedDateRange);
+     //      setShow(true);
+     // };
 
      const onClickClear = () => {
           setSelectedDateRange({
@@ -44,7 +44,7 @@ const DateRangeSelector = ({ ranges, onChange, onSubmit, ...rest }) => {
 
      return (
           <React.Fragment>
-               <div className="shadow">
+               <div className="shadow d-inline-block">
                     <DateRangePicker
                          onChange={handleSelect}
                          showSelectionPreview={true}
@@ -89,7 +89,7 @@ DateRangeSelector.propTypes = {
      /**
       * On Submit
       */
-     onSubmit: PropTypes.func.isRequired
+     onSubmit: PropTypes.func
 };
 
 export default DateRangeSelector;
