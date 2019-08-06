@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
-import {DateRangeSelector} from "./components/DateRangeSelector";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { DateRangeSelector } from "./components/DateRangeSelector";
 
 import "./styles.css";
 
